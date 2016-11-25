@@ -5,10 +5,9 @@
 
 	TODO List
 
-		- add ability to "create" a new "file transfer session"
 		- add ability to "join" an existing "file transfer session"
-		- add feature to "push" file to Google Storage & update Realtime Database (a.k.a. file transfer to cloud)
-		- fix CSS hacks used in share.html
+		- Read data from a pre-existing file transfer session
+		- "Replay" file transfer activity, given an existing session
 
 -->
 
@@ -31,6 +30,11 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" 
 			integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
 			crossorigin="anonymous"></script>
+
+	<!-- Firebase API -->
+	<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+
+	<script src="./main.js"></script>
 
 	<style>
 
@@ -65,9 +69,9 @@
 
 			<br>
 
-			<button>Join</button>
+			<button id="join-button">Join</button>
 
-			<button style="margin-left: 10px;">Create</button>
+			<button id="create-button" style="margin-left: 10px;">Create</button>
 
 			<!-- temporary link only for ease of debugging -->
 			<br>
