@@ -48,6 +48,21 @@ function padWithLeadingZeros(numStr)
 
 
 
+function isValidSession(sessionId)
+{
+	for (var i = 0; i < sessionId.length; i++)
+	{
+		if ("0123456789".indexOf(sessionId[i]) < 0)
+		{
+			return false;
+		}
+	}
+
+	return (sessionId.length == 6);
+}
+
+
+
 function createSession()
 {
 
@@ -58,7 +73,43 @@ function createSession()
 	// save the reference to the new transfer session
 	sessionRef = rootRef.child(currentSessionId);
 
-	sessionRef.push("Hello!"); // dummy code
+	/*sessionRef.on("child_added", function(snapshot) {
+
+			console.log(snapshot.val()); // dummy code
+
+		});*/
+
+	 weather = ["sunny", "rainy", "cloudy"]; // dummy code
+
+	sessionRef.push("Hello from " + currentSessionId + "!"); // dummy code
+	sessionRef.push("It's nice and " + weather[Math.floor(Math.random() * 3)] + " over here!"); // dummy code
+
+	// switch UI control to the file transfer page
+	
+	$("#index-top").fadeOut();
+	$("#share-top").fadeIn();
+
+	sessionRef.on("child_added", function(snapshot) {
+
+		//console.log(snapshot.val()); // dummy code
+
+		var value = snapshot.val();
+
+		var listNode = document.createElement("li");
+
+		listNode.innerHTML = "<span> " + snapshot.val() + " </span>";
+
+		$("#files-list").append(listNode);
+
+		/*snapshot.forEach(function(childSnapshot) {
+
+			console.log(childSnapshot.val()); // dummy code
+
+		});*/
+
+	});
+
+	console.log(currentSessionId); // dummy code
 
 }
 
@@ -67,6 +118,39 @@ function createSession()
 function joinSession()
 {
 	//console.log("hello from joinSession!");
+
+	currentSessionId = String($("#session-field").val());
+
+	if (isValidSession(currentSessionId))
+	{
+		sessionRef = rootRef.child(currentSessionId);
+
+		// switch UI control to the file transfer page
+
+		$("#index-top").fadeOut();
+		$("#share-top").fadeIn();
+
+		sessionRef.on("child_added", function(snapshot) {
+
+			//console.log(snapshot.val()); // dummy code
+
+			var value = snapshot.val();
+
+			var listNode = document.createElement("li");
+
+			listNode.innerHTML = "<span> " + snapshot.val() + " </span>";
+
+			$("#files-list").append(listNode);
+
+			/*snapshot.forEach(function(childSnapshot) {
+
+				console.log(childSnapshot.val()); // dummy code
+
+			});*/
+
+		});
+	}
+
 }
 
 
@@ -75,15 +159,20 @@ $( document ).ready(function() {
 
 	// spawn a login message, just for the sake of testing the app
 
-	var googleProvider = new firebase.auth.GoogleAuthProvider();
+	console.log(auth.currentUser); // dummy code
 
-	auth.signInWithPopup(googleProvider).then(function(result) {
+	if (auth.currentUser === null)
+	{
+		var googleProvider = new firebase.auth.GoogleAuthProvider();
 
-		currentUser = result.user;
+		auth.signInWithPopup(googleProvider).then(function(result) {
 
-		//console.log(currentUser); // dummy code
+			currentUser = result.user;
 
-	});
+			//console.log(currentUser); // dummy code
+
+		});
+	}
 
 	$("#create-button").on("click", createSession);
 
