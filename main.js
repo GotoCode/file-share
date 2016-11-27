@@ -20,6 +20,9 @@ firebase.initializeApp(config);
 // create a handle to the Firebase real-time database
 var database = firebase.database();
 
+// create a handle to the Firebase Storage service
+var storage = firebase.storage();
+
 // create a handle to the Firebase Authentication service
 var auth = firebase.auth();
 
@@ -27,6 +30,9 @@ var auth = firebase.auth();
 // a reference to the root of the database
 var rootRef  = database.ref();
 
+
+// the current session id in use
+var currentSessionId;
 
 // a reference to the current transfer session
 var sessionRef;
@@ -66,7 +72,7 @@ function isValidSession(sessionId)
 function createSession()
 {
 
-	var currentSessionId = String(Math.floor(Math.random() * 1000000));
+	currentSessionId = String(Math.floor(Math.random() * 1000000));
 
 	currentSessionId = padWithLeadingZeros(currentSessionId);
 
@@ -79,15 +85,20 @@ function createSession()
 
 		});*/
 
-	 weather = ["sunny", "rainy", "cloudy"]; // dummy code
+	/*
+	weather = ["sunny", "rainy", "cloudy"]; // dummy code
 
 	sessionRef.push("Hello from " + currentSessionId + "!"); // dummy code
 	sessionRef.push("It's nice and " + weather[Math.floor(Math.random() * 3)] + " over here!"); // dummy code
+	*/
 
 	// switch UI control to the file transfer page
 	
 	$("#index-top").fadeOut();
 	$("#share-top").fadeIn();
+
+	// update the session ID field
+	document.getElementById("session-id").innerHTML = currentSessionId;
 
 	sessionRef.on("child_added", function(snapshot) {
 
@@ -97,7 +108,7 @@ function createSession()
 
 		var listNode = document.createElement("li");
 
-		listNode.innerHTML = "<span> " + snapshot.val() + " </span>";
+		listNode.innerHTML = "<span> <a href='" + value.downloadURL + "' target='_blank'>" + value.filename + "</a> </span>";
 
 		$("#files-list").append(listNode);
 
@@ -130,15 +141,20 @@ function joinSession()
 		$("#index-top").fadeOut();
 		$("#share-top").fadeIn();
 
+		// update the session ID field
+		document.getElementById("session-id").innerHTML = currentSessionId;
+
 		sessionRef.on("child_added", function(snapshot) {
 
 			//console.log(snapshot.val()); // dummy code
 
 			var value = snapshot.val();
 
+			console.log(value);
+
 			var listNode = document.createElement("li");
 
-			listNode.innerHTML = "<span> " + snapshot.val() + " </span>";
+			listNode.innerHTML = "<span> <a href='" + value.downloadURL + "' target='_blank'>" + value.filename + "</a> </span>";
 
 			$("#files-list").append(listNode);
 
@@ -151,6 +167,32 @@ function joinSession()
 		});
 	}
 
+}
+
+
+function uploadFile()
+{
+	var fileSelect = document.getElementById("file-upload");
+
+	// reference to the bucket that stores this file
+	var bucketRef = storage.ref(currentSessionId + "/" + currentUser.uid + "/" + fileSelect.files[0].name);
+
+	// upload the file to Google Storage...
+	// ...then push a new message to Firebase Realtime Database
+	
+	bucketRef.put(fileSelect.files[0]).then(function(snapshot) {
+
+		var newMessageRef = sessionRef.push();
+
+		newMessageRef.set({
+			downloadURL : snapshot.downloadURL,
+			filename    : fileSelect.files[0].name
+		});
+
+	});
+
+	console.log(currentUser.uid);     // dummy code
+	console.log(fileSelect.files[0]); // dummy code
 }
 
 

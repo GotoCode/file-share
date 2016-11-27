@@ -5,8 +5,8 @@
 
 	TODO List
 
-		- Enable users to upload / transfer new files to server (from their own machine)
-		- Enable users to download files from a given transfer session
+		- Adjust the CSS to make the style more appealing (and less ugly)... :)
+		- Refactor the code in main.js
 
 -->
 
@@ -33,7 +33,7 @@
 	<!-- Firebase API -->
 	<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
 
-	<script src="./main.js"></script>
+	<script src="main.js"></script>
 
 	<style>
 
@@ -80,12 +80,14 @@
 
 <body>
 
+	<!-- HTML for join / create session part of web app -->
+
 	<div id="index-top" class="text-center">
 
 		<div>
 
 			<!-- Name of pre-existing transfer session to join... -->
-			<input id="session-field" type="text" placeholder="Enter session id...">
+			<input id="session-field" type="text" placeholder="Enter session id..." maxlength="6">
 
 			<br>
 
@@ -101,25 +103,18 @@
 
 	</div>
 
+	<!-- HTML for transfer file part of web app -->
+
 	<div id="share-top" style="display : none;">
 
 		<div class="text-center">
 
 			<p id="session-id"> SESSION ID </p>
 
-			<ul id="files-list">
-				
-				<li>
-					<span> kitten-photo.png </span>
-				</li>
+			<ul id="files-list"></ul>
 
-				<li>
-					<span> Kitten%20Madness.pdf </span>
-				</li>
-
-			</ul>
-
-			<button> Share File </button>
+			<input id="file-upload" type="file">
+			<button onclick="uploadFile()"> Submit </button>
 
 			<!-- temporary link only for ease of debugging -->
 			<br>
